@@ -12,6 +12,14 @@ var catLists = require('./routes/catLists');
 
 var app = express();
 
+app.all('*', (req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 // 设置模板引擎为html
@@ -26,9 +34,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 app.use('/', index);
 app.use('/user', users);
-app.use('/catList', catLists);
+app.use('/getCatList', catLists);
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

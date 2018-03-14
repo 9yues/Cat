@@ -53,13 +53,15 @@ export default {
     bottom: 0;
     left: 0;
     width: 100%;
-    background: #fff;
+    background: rgba(255,255,255,.8);
+    backdrop-filter:blur(10px);
     .flex{
         .iconfont{
             font-size: .5rem;
         }
         .tabbar-text{
             display: block;
+            font-size: .24rem;
         }
         &.router-link-exact-active{
             color: #f6c01c;
