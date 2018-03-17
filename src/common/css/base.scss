@@ -1,0 +1,103 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-family: "Microsoft YaHei",tahoma, Verdana, Geneva, sans-serif;
+	vertical-align: baseline;
+	-webkit-font-smoothing: antialiased;
+	-webkit-text-size-adjust: 100%;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+html{
+	-webkit-overflow-scrolling:touch;
+}
+body {
+	line-height: 1;
+}
+blockquote, q {
+	quotes: none;
+}
+input,textarea,select,button,a{
+  font-family: "Microsoft YaHei",tahoma, Verdana, Geneva, sans-serif;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+/* 去除默认边框 */
+fieldset, img, button {
+  border: 0;
+}
+
+/* 去掉列表前的标识, li 会继承 */
+ol, ul {
+  list-style: none;
+}
+
+h1,h2,h3,h4,h5,h6,b,i,em{
+  font-weight: normal;
+}
+
+a {
+	text-decoration: none;
+	-webkit-outline-style: none;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	&:active{
+		opacity: 0.7;
+		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	}
+	&:focus{
+		-webkit-outline-style: none;
+	}
+}
+
+/* 1.去除android a/button/input标签被点击时产生的边框 2.去除ios a标签被点击时产生的半透明灰色背景 */
+a,button,input,textarea{
+    padding: 0;
+    -webkit-tap-highlight-color:rgba(255,0,0,0);
+    border: none;
+}
+
+img {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+input{
+	border: .5px solid #ddd;
+	appearance:none;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+}
+input:focus{
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    -webkit-user-modify:read-write-plaintext-only;
+}

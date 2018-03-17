@@ -14,8 +14,22 @@
   </head>
   <body>
     <div id="app"></div>
+    <script src="https://resource.yatiku.com/resources/js/jquery-3.0.0.min.js"></script>
     <script>
         var url = 'http://192.168.0.123:3333';
+        window.onload=function(){
+            auto_data_size();
+        };
+        function auto_data_size(){
+            var imgss= $("figure img");
+            $("figure img").each(function() {
+                var imgs = new Image();
+                imgs.src=$(this).attr("src");
+                var w = imgs.width,
+                h =imgs.height;
+                $(this).parent("a").attr("data-size","").attr("data-size",w+"x"+h);
+            })
+        };
     </script>
     <!-- built files will be auto injected -->
   </body>
