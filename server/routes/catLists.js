@@ -10,8 +10,12 @@ let CatListIds = require('../models/cat_lists_ids');
 
 
 router.get('/', (req, res, next) => {
+    let pageIndex = +req.query.pageIndex;
+    let pageSize = +req.query.pageSize;
+    console.log('pageIndex = ' + pageIndex)
+    console.log('pageSize = ' + pageSize)
     // 按照时间排序
-    CatList.find({}).sort({'createTime':-1}).limit(20).exec((err, doc) => {
+    CatList.find({}).sort({'createTime':-1}).skip((pageIndex-1) * pageSize).limit(pageSize).exec((err, doc) => {
         if (err) {
             res.json({
                 status: 1,
