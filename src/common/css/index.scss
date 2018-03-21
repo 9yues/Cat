@@ -23,11 +23,23 @@ body{
 .justify-center{
   justify-content: center;
 }
+.flex-column{
+    flex-direction: column;
+}
 .text-center{
   text-align: center;
 }
 a{
     color: #464646;
+}
+input{
+    font-size: .24rem;
+}
+button{
+    font-size: .28rem;
+    &:active{
+        opacity: .7;
+    }
 }
 
 

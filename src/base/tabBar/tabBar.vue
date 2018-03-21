@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="isTab">
         <footer class="tabbar-container flex-container align-center text-center">
             <router-link class="flex" to="/">
                 <i class="iconfont" :class="indexCls"></i>
@@ -24,12 +24,23 @@
     </div>
 </template>
 <script>
-import {mapGetters} from 'vuex'
+import {mapGetters, mapMutations} from 'vuex'
 export default {
     data() {
         return {
 
         }
+    },
+    mounted() {
+        console.log(this.$route)
+        if (this.$route.name === 'login') {
+            this.setIsTab(false);
+        }
+    },
+    methods: {
+        ...mapMutations({
+            setIsTab: 'SET_IS_TAB'
+        })
     },
     computed: {
         indexCls() {
@@ -42,7 +53,8 @@ export default {
              return this.tabBar === 'user' ? 'icon-yduigerenzhongxinxuanzhong' : 'icon-yduigerenzhongxin'
         },
         ...mapGetters([
-            'tabBar'    // 相当于 this.singer 为 this.$store.getters.singer
+            'tabBar',    // 相当于 this.singer 为 this.$store.getters.singer
+            'isTab'
         ])
     }
 }

@@ -35,7 +35,11 @@ export default {
 <style lang="scss" scoped>
 
 .index-container {
-
+    padding: 0 .3rem;
+    box-sizing: border-box;
+    background: url(../common/images/bg.jpg) repeat-y;
+    background-attachment: fixed;
+    background-size: 100%;
 }
 </style>
 

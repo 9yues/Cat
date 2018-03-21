@@ -19,6 +19,8 @@ Vue.use(VueLazyLoad, {
 	loading: require('@/common/images/img.png')
 })
 
+document.body.addEventListener('touchstart', () => {}, false)
+
 
 
 

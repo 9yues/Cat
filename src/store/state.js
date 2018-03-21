@@ -1,5 +1,7 @@
 const state = {
 	// 底部导航
-	tabBar: 'index',
+    tabBar: 'index',
+    // 是否显示底部导航
+    isTab: true
 }
 export default state

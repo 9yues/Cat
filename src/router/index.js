@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import PageTransition from '@/components/PageTransition'
 import Index from '@/components/index'
+import Login from '@/components/login'
 import Message from '@/components/message'
 import User from '@/components/user'
 
@@ -21,6 +22,11 @@ const router = new Router({
         children: [
             {
                 path: '',
+                name: 'login',
+                component: Login
+            },
+            {
+                path: '/index',
                 name: 'index',
                 component: Index
             },

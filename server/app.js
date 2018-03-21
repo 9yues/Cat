@@ -7,8 +7,6 @@ var bodyParser = require('body-parser');
 let ejs = require('ejs');
 
 var index = require('./routes/index');
-var users = require('./routes/users');
-var catLists = require('./routes/catLists');
 
 var app = express();
 
@@ -36,8 +34,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/', index);
-app.use('/user', users);
-app.use('/getCatList', catLists);
 
 
 
@@ -56,7 +52,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error', {message: err.message});
 });
 
 module.exports = app;

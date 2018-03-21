@@ -18,7 +18,7 @@
                     </div>
                     <div class="bd">
                         <div class="text" v-html="item.html"></div>
-                        <div class="multimedia">
+                        <div class="multimedia" v-if="item.imgs.length">
                             <!-- 1栏布局 -->
                             <div class="lxl-layout-1 flex-container" :class="{'gif': item.imgs[0].type === 'gif'}" v-if="item.imgs.length === 1 && item.imgs[0].key">
                                 <!-- 已知宽度 -->
@@ -41,6 +41,9 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- <div class="video" v-else-if="item.videos.length">
+                            <video :src="item.videos[0].key"></video>
+                        </div> -->
                     </div>
                     <div class="ft flex-container">
                         <div>
@@ -124,7 +127,6 @@ export default {
         loadMore() {
             let self = this;
             $(document).on('scroll', function(){
-                console.log($(this).scrollTop());
                 if ($(window).height() + $(this).scrollTop() + 50 >= $(document).height() && !self.loadingFlag) {
                     // 执行加载
                     console.log('加载');
@@ -161,7 +163,6 @@ export default {
                     pageSize: this.pageSize
                 }).then(res => {
                     Indicator.close();
-                    console.log(res);
                     res.result.forEach(item => {
                         try {
                             console.log(item);
@@ -223,7 +224,8 @@ export default {
         li{
             padding: .2rem .2rem 0 .2rem;
             margin-bottom: .3rem;
-            background: #fff;
+            background: rgba(255,255,255,.9);
+            backdrop-filter:blur(10px);
             .hd{
                 .avatar{
                     padding-right: .2rem;
