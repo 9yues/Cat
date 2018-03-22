@@ -52,6 +52,15 @@ export function checkMobile(str) {
 	}
 }
 
+// 验证邮箱
+export function checkEmail(value){
+　　var myReg=/^[a-zA-Z0-9_-]+@([a-zA-Z0-9]+\.)+(com|cn|net|org)$/;
+　　if(myReg.test(value)){
+　　　　return true;
+　　}
+　　return false;
+}
+
 // 获取范围内的随机数
 function randomNum(Min, Max) {
     var Range = Max - Min;

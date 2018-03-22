@@ -193,7 +193,7 @@ export default {
                     // thumb180
                     // "https://wx2.sinaimg.cn/large/63e5c1e1gy1fhu679co41g209q05cu0x.gif"
 
-                    if (!this.catList.length) {
+                    if (!this.catList.length || this.pageIndex === 1) {
                         this.catList = res.result;
                     } else {
                         if (this.pageIndex > 1) this.catList = this.catList.concat(res.result);

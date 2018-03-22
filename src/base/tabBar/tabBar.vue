@@ -1,7 +1,7 @@
 <template>
     <div v-if="isTab">
         <footer class="tabbar-container flex-container align-center text-center">
-            <router-link class="flex" to="/">
+            <router-link class="flex" to="/index">
                 <i class="iconfont" :class="indexCls"></i>
                 <span class="tabbar-text">首页</span>
             </router-link>
@@ -24,23 +24,12 @@
     </div>
 </template>
 <script>
-import {mapGetters, mapMutations} from 'vuex'
+import {mapGetters} from 'vuex'
 export default {
     data() {
         return {
 
         }
-    },
-    mounted() {
-        console.log(this.$route)
-        if (this.$route.name === 'login') {
-            this.setIsTab(false);
-        }
-    },
-    methods: {
-        ...mapMutations({
-            setIsTab: 'SET_IS_TAB'
-        })
     },
     computed: {
         indexCls() {

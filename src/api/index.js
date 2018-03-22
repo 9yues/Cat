@@ -1,7 +1,7 @@
 import axios from 'axios'
 import qs from 'qs'
 
-// 添加讲师
+// 添加用户
 export function addUser(obj) {
     const params = Object.assign({}, {}, obj);
     const data = qs.stringify(params);
@@ -17,6 +17,65 @@ export function addUser(obj) {
     })
 }
 
+// 用户登录
+export function login(obj) {
+    const params = Object.assign({}, {}, obj);
+    const data = qs.stringify(params);
+    return axios({
+        url: `${url}/login`,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        data
+    }).then(res => {
+        return Promise.resolve(res.data)
+    })
+}
+
+// 登出
+export function logout() {
+    return axios({
+        url: `${url}/logout`,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        }
+    }).then(res => {
+        return Promise.resolve(res.data)
+    })
+}
+
+// 修改用户信息
+export function updateUserInfo(obj) {
+    const params = Object.assign({}, {}, obj);
+    const data = qs.stringify(params);
+    return axios({
+        url: `${url}/updateUserInfo`,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        data
+    }).then(res => {
+        return Promise.resolve(res.data)
+    })
+}
+
+// 头绪上传
+export function userAvatarFile(obj) {
+    const data = obj;
+    return axios({
+        url: `${url}/userAvatarFile`,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        data
+    }).then(res => {
+        return Promise.resolve(res.data)
+    })
+}
 
 
 // 获取列表数据

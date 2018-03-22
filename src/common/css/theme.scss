@@ -1,5 +1,12 @@
 $color: #f6c01c;
 $title_color: #464646;
 $desc_color: #999;
+$desc_color2: #c7c7c7;
 $border_color: #ddd;
+$red: #ff5f5f;
 
+%textHidden1{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}

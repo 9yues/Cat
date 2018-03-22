@@ -21,6 +21,8 @@ let userSchema = new Schema({
   sex: Number,
   // 邮箱
   email: String,
+  // 微信号
+  wx: String,
   // 头像
   avatar: String,
   // 注册时间

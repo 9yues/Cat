@@ -70,14 +70,16 @@
 </template>
 <script>
 import {checkMobile} from '@/common/js/util'
-import {addUser} from '@/api/index'
-import { Toast,Indicator } from 'mint-ui';
+import {addUser, login} from '@/api/index'
+import { Toast,Indicator } from 'mint-ui'
+import {mapMutations} from 'vuex'
+
 export default {
     data() {
         return {
             login: {
-                tel: '',
-                pass: ''
+                tel: '15521054523',
+                pass: '000000'
             },
             reg: {
                 tel: '',
@@ -90,6 +92,7 @@ export default {
         }
     },
     mounted() {
+        this.setIsTab(false);
         document.addEventListener('WeixinJSBridgeReady', () => {
             this.$refs.video.play();
         });
@@ -113,6 +116,7 @@ export default {
                 Toast('喵~密码不能少于6位噢');
                 return;
             }
+            this._login();
         },
         // 注册
         regSubmit() {
@@ -158,6 +162,34 @@ export default {
                 this.state = 'login'
             }
         },
+        // 用户登录
+        _login() {
+            Indicator.open({
+                text: '登录中',
+                spinnerType: 'fading-circle'
+            });
+            login({
+                tel: this.login.tel,
+                pass: this.login.pass
+            }).then(res => {
+                Indicator.close();
+                if (res.status === 2) {
+                    Toast({
+                        message: res.msg,
+                        iconClass: 'iconfont icon-guanbi'
+                    });
+                    return;
+                }
+                Toast({
+                    message: res.msg,
+                    iconClass: 'iconfont icon-zhengque'
+                });
+                this.setUserInfo(res.result)
+                localStorage.setItem('userInfo', JSON.stringify(res.result))
+                this.setIsTab(true)
+                this.$router.push('index')
+            })
+        },
         //  添加用户
         _addUser() {
             Indicator.open();
@@ -177,8 +209,13 @@ export default {
                     message: res.msg,
                     iconClass: 'iconfont icon-zhengque'
                 });
+                this.switchState();
             })
-        }
+        },
+        ...mapMutations({
+            setUserInfo: 'SET_USER_INFO',
+            setIsTab: 'SET_IS_TAB'
+        })
     }
 }
 </script>

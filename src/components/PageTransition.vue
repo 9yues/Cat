@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import {mapMutations} from 'vuex'
 import TabBar from '@/base/tabBar/tabBar'
 export default {
     data () {
@@ -18,12 +19,25 @@ export default {
     beforeRouteUpdate (to, from, next) {
         let isBack = this.$router.isBack
         if (isBack) {
-        this.transitionName = 'slide-right'
+            this.transitionName = 'slide-right'
         } else {
-        this.transitionName = 'slide-left'
+            this.transitionName = 'slide-left'
         }
         this.$router.isBack = false
         next()
+    },
+    beforeRouteLeave (to, from, next) {
+        console.log('name = ' + this.$route.name)
+        if (this.$route.name === 'login') {
+            this.setIsTab(false);
+        } else {
+            this.setIsTab(true);
+        }
+    },
+    methods: {
+        ...mapMutations({
+            setIsTab: 'SET_IS_TAB'
+        })
     },
     components: {
         TabBar

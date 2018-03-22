@@ -7,28 +7,29 @@ let superagent = require('superagent');
 let users = require('../models/users');
 let cats = require('../models/catLists');
 
+// 头像上传
+let formidable = require('formidable'),
+    fs = require('fs'),
+    AVATAR_UPLOAD_FOLDER = '/avatar/',
+    domain = "http://192.168.0.123:3333";
+
 console.log(util);
 
 // 添加用户
 router.post('/addUser', (req, res, next) => {
     let tel = req.body.tel;
     let pass = req.body.pass;
-
+    let param = {
+        userTel: tel,
+    }
     // 添加用户之前先判断该用户是否存在
-    users.user.find({}, (err, doc) => {
+    users.user.findOne(param, (err, doc) => {
         return util.dbPromise(err, doc)
     })
     .then(result => {
 
-        let flag = false;
-        result.forEach(item => {
-            if (item.userTel == tel) {
-                flag = true;
-            }
-        });
-
         // 手机号存在，直接 catch
-        if (flag) {
+        if (result) {
             return Promise.reject({
                 status: 2,
                 msg: '手机号已存在'
@@ -61,9 +62,10 @@ router.post('/addUser', (req, res, next) => {
                     sign: '这只喵很懒，什么都没有留下',
                     nickName: util.createRandomName(update.id),
                     sex: util.randomNum(0, 1),
+                    wx: '',
                     email: '',
                     avatar: `http://yymapp.com/user/avatar/${util.randomNum(1, 10)}`,
-                    createTime: Date.now(),
+                    createTime: new Date(),
                     lastLoginTime: ''
                 });
 
@@ -96,8 +98,159 @@ router.post('/addUser', (req, res, next) => {
 
 });
 
+// 登录接口
+router.post('/login', (req, res, next) => {
+    let param = {
+        userTel: req.body.tel,
+        userPass: req.body.pass
+    }
+    users.user.findOne(param, (err, doc) => {
+        return util.dbPromise(err, doc)
+    })
+    .then(result => {
 
+        if (!result) {
+            res.json({
+                status: 2,
+                msg: '账号或者密码错误'
+            });
+        } else {
 
+            // 写入cookie
+            res.cookie('userId', result.userId, {
+                path: '/',
+                maxAge: 1000 * 60 * 60
+            })
+
+            // 写入session
+            // req.session.user = result;
+
+            // 修改用户最后一次登录时间
+            users.user.update({userId: result.userId}, {$set: { lastLoginTime: new Date()}}, (err, doc) => {
+                return util.dbPromise(err, doc)
+            })
+            .then(result2 => {
+                // 登录成功
+                res.json({
+                    status: 0,
+                    msg: '登录成功',
+                    result
+                });
+            })
+        }
+
+    })
+    .catch(err => {
+        // 判断是否是手动返回
+        if (err.status) {
+            res.json({
+                status: err.status,
+                msg: err.msg
+            });
+        } else {
+            res.json({
+                status: 1,
+                msg: err.message
+            });
+        }
+    })
+})
+
+// 登出接口
+router.post('/logout', (req, res, next) => {
+    res.cookie('userId', '', {
+        path: '/',
+        maxAge: -1
+    })
+    res.json({
+        status: 0,
+        msg: '退出成功'
+    })
+})
+
+// 修改用户信息接口
+router.post('/updateUserInfo', (req, res, next) => {
+    let data = req.body;
+    users.user.update({userId: data.userId}, {$set: data}, (err, doc) => {
+        return util.dbPromise(err, doc)
+    })
+    .then(result => {
+        res.json({
+            status: 0,
+            msg: '修改成功',
+            result
+        })
+    })
+    .catch(err => {
+        res.json({
+            status: 1,
+            msg: err.message
+        });
+    });
+})
+
+// 用户头像上传接口
+router.post('/userAvatarFile', (req, res, next) => {
+
+    let form = new formidable.IncomingForm();   //创建上传表单
+    form.encoding = 'utf-8';        //设置编辑
+    form.uploadDir = 'public' + AVATAR_UPLOAD_FOLDER;     //设置上传目录
+    form.keepExtensions = true;     //保留后缀
+    form.maxFieldsSize = 2 * 1024 * 1024;   //文件大小
+
+    form.parse(req, (err, fields, files) => {
+        console.log(fields)
+        if (err) {
+            res.json({
+                status: 1,
+                msg: err.message
+            })
+            return;
+        }
+
+        let extName = '';  // 后缀名
+        switch (files.avatar.type) {
+            case 'image/pjpeg':
+                extName = 'jpg';
+                break;
+            case 'image/jpeg':
+                extName = 'jpg';
+                break;
+            case 'image/png':
+                extName = 'png';
+                break;
+            case 'image/gif':
+                extName = 'gif';
+                break;
+            case 'image/x-png':
+                extName = 'png';
+                break;
+        }
+
+        if(extName.length == 0){
+            res.json({
+                status: 1,
+                msg: '只支持png和gif和jpg格式图片'
+            })
+            return;
+        }
+
+        let avatarName = util.randomString(12) + '.' + extName;
+        //图片写入地址；
+        let newPath = form.uploadDir + avatarName;
+        //显示地址；
+        let showUrl = domain + AVATAR_UPLOAD_FOLDER + avatarName;
+        //重命名
+        fs.renameSync(files.avatar.path, newPath);
+
+        res.json({
+            status: 0,
+            msg: '头像更新成功',
+            result: showUrl
+        });
+
+    });
+})
 
 // 获取猫猫列表
 router.get('/getCatList', (req, res, next) => {

@@ -2,3 +2,4 @@
 
 export const tabBar = state => state.tabBar
 export const isTab = state => state.isTab
+export const userInfo = state => state.userInfo
