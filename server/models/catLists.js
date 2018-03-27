@@ -10,12 +10,8 @@ let catListsSchema = new Schema({
   id: Number,
   // 创建时间
   createTime: String,
-  // 用户昵称
-  nickName: String,
   // 用户id
   userId: Number,
-  // 用户头像
-  avatar: String,
   // 评论数
   comments: Number,
   // 点赞数
@@ -25,7 +21,11 @@ let catListsSchema = new Schema({
   // 图片内容
   imgs: String,
   // 视频内容
-  videos: String
+  videos: String,
+  // 经度
+  latitude: String,
+  // 纬度
+  longitude: String
 });
 
 // 输出一个用户集合

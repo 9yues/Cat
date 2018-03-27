@@ -9,9 +9,9 @@
                 <i class="iconfont" :class="messageCls"></i>
                 <span class="tabbar-text">消息</span>
             </router-link>
-            <router-link class="flex tabbar-add" to="/">
+            <a class="flex tabbar-add" href="javascript:;" @click="showPublish">
                 <img src="../../common/images/logo.png" alt="">
-            </router-link>
+            </a>
             <router-link class="flex" to="/aaa">
                 <i class="iconfont icon-search"></i>
                 <span class="tabbar-text">发现</span>
@@ -24,7 +24,7 @@
     </div>
 </template>
 <script>
-import {mapGetters} from 'vuex'
+import {mapGetters, mapMutations} from 'vuex'
 export default {
     data() {
         return {
@@ -45,6 +45,14 @@ export default {
             'tabBar',    // 相当于 this.singer 为 this.$store.getters.singer
             'isTab'
         ])
+    },
+    methods: {
+        showPublish() {
+            this.setIsPublish(true);
+        },
+        ...mapMutations({
+            setIsPublish: 'SET_IS_PUBLISH'
+        })
     }
 }
 </script>

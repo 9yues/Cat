@@ -65,7 +65,7 @@ router.post('/addUser', (req, res, next) => {
                     wx: '',
                     email: '',
                     avatar: `http://yymapp.com/user/avatar/${util.randomNum(1, 10)}`,
-                    createTime: new Date(),
+                    createTime: Date.now(),
                     lastLoginTime: ''
                 });
 
@@ -189,8 +189,8 @@ router.post('/updateUserInfo', (req, res, next) => {
     });
 })
 
-// 用户头像上传接口
-router.post('/userAvatarFile', (req, res, next) => {
+// 图片上传接口
+router.post('/imgUpload', (req, res, next) => {
 
     let form = new formidable.IncomingForm();   //创建上传表单
     form.encoding = 'utf-8';        //设置编辑
@@ -250,6 +250,65 @@ router.post('/userAvatarFile', (req, res, next) => {
         });
 
     });
+})
+
+// 发布猫猫接口
+router.post('/addCat', (req, res, next) => {
+
+    let catInfo = {
+        userId: req.body.userId,
+        html: req.body.html,
+        imgs: req.body.imgs
+    }
+
+    // 每次添加发布新猫之前，先拿最后一个id
+    cats.ids.findOne({}, (err, doc) => {
+        return util.dbPromise(err, doc)
+    })
+    .then(result => {
+        result.id = parseInt(result.id);
+        ++result.id
+        let update = {
+            id: result.id
+        };
+
+        cats.ids.update({ name: 'cat_list'}, {$set: update},(err, doc) => {
+            return util.dbPromise(err, doc)
+        }).then(result2 => {
+            let catSchema = new cats.cat({
+                // 唯一id
+                id: update.id,
+                // 创建时间
+                createTime: Date.now(),
+                // 用户id
+                userId: catInfo.userId,
+                // 评论数
+                comments: 0,
+                // 点赞数
+                praises: 0,
+                // 文本内容
+                html: catInfo.html,
+                // 图片内容
+                imgs: catInfo.imgs,
+                // 视频内容
+                videos: ''
+            });
+            catSchema.save((err, doc) => {
+                return util.dbPromise(err, doc)
+            })
+        }).then(result3 => {
+            res.json({
+                status: 0,
+                msg: '添加成功'
+            })
+        })
+    })
+    .catch(err => {
+        res.json({
+            status: 1,
+            msg: err.message
+        });
+    })
 })
 
 // 获取猫猫列表

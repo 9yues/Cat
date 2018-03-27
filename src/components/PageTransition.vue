@@ -16,6 +16,12 @@ export default {
             transitionName: 'slide-left'
         }
     },
+    mounted() {
+        // 刷新页面从缓存里面拿用户信息
+        if (localStorage.getItem('userInfo')) {
+            this.setUserInfo(JSON.parse(localStorage.getItem('userInfo')));
+        }
+    },
     beforeRouteUpdate (to, from, next) {
         let isBack = this.$router.isBack
         if (isBack) {
@@ -36,7 +42,8 @@ export default {
     },
     methods: {
         ...mapMutations({
-            setIsTab: 'SET_IS_TAB'
+            setIsTab: 'SET_IS_TAB',
+            setUserInfo: 'SET_USER_INFO'
         })
     },
     components: {

@@ -1,3 +1,4 @@
+@import "./theme.scss";
 body{
   width: 100%;
   max-width: 750px;
@@ -77,6 +78,121 @@ button{
             margin-top: 20px;
             width: 50px;
             height: 50px;
+        }
+    }
+}
+
+
+
+.index-list-ul{
+    li{
+        padding: .2rem .2rem 0 .2rem;
+        margin-bottom: .3rem;
+        background: rgba(255,255,255,.9);
+        backdrop-filter:blur(10px);
+        .hd{
+            .avatar{
+                padding-right: .2rem;
+                img{
+                    display: block;
+                    width: 1.1rem;
+                    height: 1.1rem;
+                    border-radius: 50%;
+                }
+            }
+            .msg{
+                .title{
+                    padding-bottom: .06rem;
+                    color: $title_color;
+                    font-size: .32rem;
+                    font-weight: normal;
+                }
+                .desc{
+                    color: $desc_color;
+                    font-size: .24rem;
+                }
+            }
+        }
+        .bd{
+            .text{
+                padding: .3rem 0;
+                font-size: .28rem;
+                color: $title_color;
+            }
+            .multimedia{
+                .lxl-layout-1{
+                    height: auto;
+                    max-height: 3rem;
+                    overflow: hidden;
+                    &.gif{
+                        &::before{
+                            bottom: 0;
+                        }
+                    }
+                    .response{
+                        height: 100%;
+                    }
+                }
+                .lxl-layout-3{
+                    width: 100%;
+                    overflow: hidden;
+                    margin-left: -.1rem;
+                    .img{
+                        display: block;
+                        float: left;
+                        padding-left: .1rem;
+                        padding-bottom: .1rem;
+                        height: 2rem;
+                        font-size: 0;
+                        width: 33.33%;
+                        box-sizing: border-box;
+                        img{
+                            display: block;
+                            width: 100%;
+                            height: 100%;
+                        }
+                    }
+                }
+                .gif{
+                    position: relative;
+                    &::before{
+                        content: "GIF";
+                        position: absolute;
+                        bottom: .1rem;
+                        right: 0;
+                        padding: .02rem .05rem;
+                        background-color: rgba(0,0,0,.4);
+                        color: #fff;
+                        text-align: center;
+                        font-size: .18rem;
+
+                    }
+                }
+            }
+        }
+        .ft{
+            padding: .3rem 0;
+            // border-bottom: .5px solid $border_color;
+            justify-content: flex-end;
+            align-content: center;
+            div{
+                display: flex;
+                align-items: center;
+                padding-left: .4rem;
+                .iconfont{
+                    color: $desc_color;
+                    font-size: .4rem;
+                }
+                span {
+                    color: $desc_color;
+                    font-size: .28rem;
+                }
+                &:nth-child(1) {
+                    .iconfont{
+                        font-size: .38rem;
+                    }
+                }
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 <template>
   <div class="login-container">
-      <video ref="video" src="../common/images/cat.mp4" loop autoplay webkit-playsinline="true" playsinline="true" x-webkit-airplay="allow"></video>
+      <video v-if="!isAndroid" ref="video" src="../common/images/cat.mp4" controls loop autoplay webkit-playsinline="true" playsinline="true" x-webkit-airplay="allow"></video>
+      <img v-else src="../common/images/bg.jpg" class="login-bg" alt="">
       <div class="box flex-container">
           <div class="dialog" :class="loginCls">
               <div class="user group flex-container align-center">
@@ -77,6 +78,7 @@ import {mapMutations} from 'vuex'
 export default {
     data() {
         return {
+            isAndroid,
             login: {
                 tel: '15521054523',
                 pass: '000000'
@@ -95,7 +97,7 @@ export default {
         this.setIsTab(false);
         document.addEventListener('WeixinJSBridgeReady', () => {
             this.$refs.video.play();
-        });
+        }, false);
     },
     computed: {
         loginCls() {
@@ -184,9 +186,10 @@ export default {
                     message: res.msg,
                     iconClass: 'iconfont icon-zhengque'
                 });
-                this.setUserInfo(res.result)
                 localStorage.setItem('userInfo', JSON.stringify(res.result))
+                this.setUserInfo(res.result)
                 this.setIsTab(true)
+                console.log(this);
                 this.$router.push('index')
             })
         },
@@ -230,7 +233,7 @@ export default {
     height: 100%;
     // background: #FCFCF2 url(../common/images/login_bg.jpg) no-repeat;
     // background-size: 100%;
-    background: #fff;
+    // background: #fff;
     overflow: hidden;
     .box{
         position: absolute;
@@ -347,6 +350,10 @@ export default {
         height: auto;
         // -webkit-filter: grayscale(100%);
         // filter:grayscale(100%);
+    }
+    .login-bg{
+        width: 100%;
+
     }
 }
 </style>

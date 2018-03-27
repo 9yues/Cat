@@ -15,6 +15,10 @@ const matutaions = {
         } else {
             state.userInfo[key.type] = key.value;
         }
+    },
+    // 设置是否显示发布
+    [types.SET_IS_PUBLISH](state, flag) {
+        state.isPublish = flag
     }
 }
 

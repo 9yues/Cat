@@ -80,7 +80,7 @@
 
 <script>
 import {checkMobile, checkEmail } from '@/common/js/util'
-import {logout, updateUserInfo, userAvatarFile} from '@/api/index'
+import {logout, updateUserInfo, imgUpload} from '@/api/index'
 import { Toast,MessageBox,Actionsheet,Indicator } from 'mint-ui'
 import {mapMutations, mapGetters} from 'vuex'
 export default {
@@ -102,12 +102,16 @@ export default {
     },
     mounted() {
         this.setTabBar('user');
+        if (localStorage.getItem('userInfo')) {
+            this.setUserInfo(JSON.parse(localStorage.getItem('userInfo')));
+        }
     },
     watch: {
+        // 后期再完善，实现单个字段修改
         userInfo: {
             deep: true,
             handler(val) {
-                console.log(val)
+                localStorage.setItem('userInfo', JSON.stringify(val));
                 this._updateUserInfo();
             }
         }
@@ -128,7 +132,7 @@ export default {
             let formDate = new FormData();
             formDate.append('avatar', e.target.files[0]);
             formDate.append('userId', this.userInfo.userId);
-            this._userAvatarFile(formDate);
+            this._imgUpload(formDate);
         },
         // 显示用户信息
         showUserInfo(type) {
@@ -226,12 +230,12 @@ export default {
             this._logout();
         },
         // 用户头像上传接口
-        _userAvatarFile(obj) {
+        _imgUpload(obj) {
             Indicator.open({
                 text: '请稍后...',
                 spinnerType: 'fading-circle'
             });
-            userAvatarFile(obj).then(res => {
+            imgUpload(obj).then(res => {
                 Indicator.close();
                 if (res.status === 1) {
                     Toast({
@@ -272,6 +276,7 @@ export default {
                         message: res.msg,
                         iconClass: 'iconfont icon-zhengque'
                     });
+                    localStorage.setItem('userInfo', '');
                     this.$router.push('/')
                 }
             })

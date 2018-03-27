@@ -1,18 +1,19 @@
 <template>
     <div class="index-container">
-        <cat-list></cat-list>
-        <back-top></back-top>
+        <cat-list ref="catList"></cat-list>
+        <back-top ref="backTop"></back-top>
+        <publish ref="publish"></publish>
     </div>
 </template>
 
 <script>
+import Publish from '@/base/publish/publish'
 import CatList from '@/base/catList/catList'
 import BackTop from '@/base/backtop/backtop'
 import {mapMutations} from 'vuex'
 export default {
     data() {
         return {
-
         }
     },
     mounted() {
@@ -28,18 +29,20 @@ export default {
     },
     components: {
         CatList,
-        BackTop
+        BackTop,
+        Publish
     }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 
 .index-container {
-    padding: 0 .3rem;
+    padding: 0 .3rem 1rem .3rem;
     box-sizing: border-box;
     background: url(../common/images/bg.jpg) repeat-y;
     background-attachment: fixed;
     background-size: 100%;
 }
+
 </style>
 

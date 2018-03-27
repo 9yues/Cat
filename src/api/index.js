@@ -62,11 +62,12 @@ export function updateUserInfo(obj) {
     })
 }
 
-// 头绪上传
-export function userAvatarFile(obj) {
-    const data = obj;
+// 发布猫猫接口
+export function addCat(obj) {
+    const params = Object.assign({}, {}, obj);
+    const data = qs.stringify(params);
     return axios({
-        url: `${url}/userAvatarFile`,
+        url: `${url}/addCat`,
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -77,6 +78,20 @@ export function userAvatarFile(obj) {
     })
 }
 
+// 单图片上传
+export function imgUpload(obj) {
+    const data = obj;
+    return axios({
+        url: `${url}/imgUpload`,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        data
+    }).then(res => {
+        return Promise.resolve(res.data)
+    })
+}
 
 // 获取列表数据
 export function getCatList(obj) {
