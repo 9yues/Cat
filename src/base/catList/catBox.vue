@@ -16,12 +16,12 @@
                 <div class="lxl-layout-1 flex-container" :class="{'gif': item.imgs[0].type === 'gif'}" v-if="item.imgs.length === 1 && item.imgs[0].key">
                     <!-- 已知宽度 -->
                     <template v-if="item.imgs[0].width">
-                        <img ref="previewImg" @click="openImg($event, item, 0)" class="preview-img" :class="{'response': item.imgs[0].width > windowWidth}" v-if="item.imgs[0].type === 'gif'" v-lazy="item.imgs[0].gif" alt="">
-                        <img ref="previewImg" @click="openImg($event, item, 0)" class="preview-img" :class="{'response': item.imgs[0].width > windowWidth}" v-else v-lazy="item.imgs[0].key" alt="">
+                        <img ref="previewImg" @click.stop="openImg($event, item, 0)" class="preview-img" :class="{'response': item.imgs[0].width > windowWidth}" v-if="item.imgs[0].type === 'gif'" v-lazy="item.imgs[0].gif" alt="">
+                        <img ref="previewImg" @click.stop="openImg($event, item, 0)" class="preview-img" :class="{'response': item.imgs[0].width > windowWidth}" v-else v-lazy="item.imgs[0].key" alt="">
                     </template>
                     <template v-else>
-                        <img ref="previewImg" @click="openImg($event, item, 0)" class="preview-img response" v-if="item.imgs[0].type === 'gif'" v-lazy="item.imgs[0].gif" alt="">
-                        <img ref="previewImg" @click="openImg($event, item, 0)" class="preview-img response" v-else v-lazy="item.imgs[0].key" alt="">
+                        <img ref="previewImg" @click.stop="openImg($event, item, 0)" class="preview-img response" v-if="item.imgs[0].type === 'gif'" v-lazy="item.imgs[0].gif" alt="">
+                        <img ref="previewImg" @click.stop="openImg($event, item, 0)" class="preview-img response" v-else v-lazy="item.imgs[0].key" alt="">
                     </template>
                     <!-- 未知宽度 -->
 
@@ -29,8 +29,8 @@
                 <!-- 3栏布局 -->
                 <div class="lxl-layout-3" v-else>
                     <div class="img" v-if="imgItem.key" :class="{'gif': imgItem.type === 'gif'}" v-for="(imgItem, imgIndex) in item.imgs" :key="imgIndex">
-                        <img ref="previewImg" @click="openImg($event, item, imgIndex)" class="preview-img" v-if="imgItem.type === 'gif'" v-lazy="imgItem.gif" alt="">
-                        <img ref="previewImg" @click="openImg($event, item, imgIndex)" class="preview-img" v-else v-lazy="imgItem.key" alt="">
+                        <img ref="previewImg" @click.stop="openImg($event, item, imgIndex)" class="preview-img" v-if="imgItem.type === 'gif'" v-lazy="imgItem.gif" alt="">
+                        <img ref="previewImg" @click.stop="openImg($event, item, imgIndex)" class="preview-img" v-else v-lazy="imgItem.key" alt="">
                     </div>
                 </div>
             </div>
@@ -39,13 +39,13 @@
             </div> -->
         </div>
         <div class="ft flex-container">
-            <div>
+            <div @click.stop="clickZan(item)" :class="{'on': item.isPraise}">
                 <i class="iconfont icon-dianzan"></i>
-                <!-- <span>10</span> -->
+                <span v-if="item.praiseCount">{{item.praiseCount}}</span>
             </div>
-            <div>
+            <div @click.stop="clickComment">
                 <i class="iconfont icon-xiaoxi"></i>
-                <!-- <span>10</span> -->
+                <span v-if="item.commentList.length">{{item.commentList.length}}</span>
             </div>
             <div>
                 <i class="iconfont icon-zhuanfa00"></i>
@@ -54,7 +54,8 @@
     </div>
 </template>
 <script>
-import VuePhotoSwipe from '@/base/photoswipe/photoswipe'
+import {addZan} from '@/api/index'
+import {mapGetters} from 'vuex'
 export default {
     name: 'catBox',
     props: {
@@ -66,11 +67,37 @@ export default {
     data() {
         return {
             windowWidth: window.innerWidth - 30,
-            imgList: [],
-            imgIndex: 0,
         }
     },
+    computed: {
+        ...mapGetters([
+            'userInfo'
+        ])
+    },
     methods: {
+
+        // 点赞
+        clickZan(item) {
+            item.isPraise = !item.isPraise;
+            this._addZan({
+                userId: this.userInfo.userId,
+                catId: this.item.id
+            })
+            .then(res => {
+                item.praiseCount = res.result;
+            })
+        },
+
+        // 评论
+        clickComment() {
+            localStorage.setItem('current_cat', JSON.stringify(this.item));
+            this.$router.push({
+                path: `index/${this.item._id}`,
+                query: {
+                    isComment: 1
+                }
+            });
+        },
 
         // 打开图片预览
         openImg(e, item, index) {
@@ -80,18 +107,23 @@ export default {
                 item.w = e.target.naturalWidth;
                 item.h = e.target.naturalHeight;
             });
-            this.imgIndex = index;
-            this.imgList = item.imgs;
+
+            this.$emit('openImg', {
+                imgIndex: index,
+                imgList: item.imgs
+            })
         },
 
-        // 关闭图片预览
-        imgClose() {
-            this.imgList = [];
-            this.imgIndex = 0;
-        },
-    },
-    components: {
-        VuePhotoSwipe
+        // 点赞接口
+        _addZan(obj) {
+            return new Promise((resolve, reject) => {
+                addZan(obj).then(res => {
+                    resolve(res)
+                })
+            })
+        }
+
+
     }
 }
 </script>

@@ -11,9 +11,8 @@ let cats = require('../models/catLists');
 let formidable = require('formidable'),
     fs = require('fs'),
     AVATAR_UPLOAD_FOLDER = '/avatar/',
-    domain = "http://192.168.0.123:3333";
+    domain = "http://192.168.0.104:3333";
 
-console.log(util);
 
 // 添加用户
 router.post('/addUser', (req, res, next) => {
@@ -65,6 +64,8 @@ router.post('/addUser', (req, res, next) => {
                     wx: '',
                     email: '',
                     avatar: `http://yymapp.com/user/avatar/${util.randomNum(1, 10)}`,
+                    myZanList: '[]',
+                    myCommentList: '[]',
                     createTime: Date.now(),
                     lastLoginTime: ''
                 });
@@ -171,7 +172,7 @@ router.post('/logout', (req, res, next) => {
 // 修改用户信息接口
 router.post('/updateUserInfo', (req, res, next) => {
     let data = req.body;
-    users.user.update({userId: data.userId}, {$set: data}, (err, doc) => {
+    users.user.update({userId: data.userId}, {$set: { [data.type]: data.value }}, (err, doc) => {
         return util.dbPromise(err, doc)
     })
     .then(result => {
@@ -257,6 +258,8 @@ router.post('/addCat', (req, res, next) => {
 
     let catInfo = {
         userId: req.body.userId,
+        nickName: req.body.nickName,
+        avatar: req.body.avatar,
         html: req.body.html,
         imgs: req.body.imgs
     }
@@ -282,10 +285,16 @@ router.post('/addCat', (req, res, next) => {
                 createTime: Date.now(),
                 // 用户id
                 userId: catInfo.userId,
-                // 评论数
-                comments: 0,
-                // 点赞数
-                praises: 0,
+                nickName: catInfo.nickName,
+                avatar: catInfo.avatar,
+                // 评论列表
+                commentList: '[]',
+                // 点赞列表
+                praiseList: '[]',
+                 // 经度
+                latitude: '',
+                // 纬度
+                longitude: '',
                 // 文本内容
                 html: catInfo.html,
                 // 图片内容
@@ -309,6 +318,169 @@ router.post('/addCat', (req, res, next) => {
             msg: err.message
         });
     })
+})
+
+// 点赞接口
+router.post('/addZan', (req, res, next) => {
+    let catInfo = {
+        userId: req.body.userId,
+        catId:  req.body.catId
+    };
+    // 先拿到当前说说
+    cats.cat.findOne({id: catInfo.catId}, (err, doc) => {
+        return util.dbPromise(err, doc)
+    })
+    .then(result => {
+        let praiseList = [],
+            arr = [],
+            isPraise = false,
+            praiseCount = 0
+
+        praiseList = JSON.parse(result.praiseList);
+        console.log('praiseList.length = ', praiseList.length);
+        // 判断有没有人点赞
+        if (praiseList.length) {
+            praiseList.forEach((item, index) => {
+                // 计算有多少人点赞
+                if (item.isPraise) {
+                    praiseCount++;
+                }
+                if (item.userId == catInfo.userId) {
+                    isPraise = true;
+                    if (item.isPraise) {
+                        --praiseCount
+                    } else {
+                        ++praiseCount
+                    }
+                    item.isPraise = !item.isPraise;
+                    item.praiseTime = Date.now();
+                }
+            });
+            if (!isPraise) {
+                ++praiseCount
+                praiseList.push({
+                    userId: catInfo.userId,
+                    isPraise: true,
+                    praiseTime: Date.now()
+                })
+            }
+            arr = praiseList;
+
+            // 更新我的点赞列表
+            util.updateMyZanList(users.user, catInfo, arr);
+
+            // 更新说说
+            cats.cat.update({id: catInfo.catId}, {$set: { praiseList: JSON.stringify(arr) }}, (err, doc) => {
+                return util.dbPromise(err, doc)
+            })
+            .then(result2 => {
+                res.json({
+                    status: 0,
+                    msg: '操作成功',
+                    result: praiseCount
+                })
+            })
+        } else {
+            arr.push({
+                userId: catInfo.userId,
+                isPraise: true,
+                praiseTime: Date.now()
+            });
+
+            // 更新我的点赞列表
+            util.updateMyZanList(users.user, catInfo, arr);
+
+            // 更新说说
+            cats.cat.update({id: catInfo.catId}, {$set: { praiseList: JSON.stringify(arr) }}, (err, doc) => {
+                return util.dbPromise(err, doc)
+            })
+            .then(result2 => {
+                res.json({
+                    status: 0,
+                    msg: '点赞成功',
+                    result: 1
+                })
+            })
+        }
+    })
+    .catch(err => {
+        res.json({
+            status: 1,
+            msg: err.message
+        });
+    });
+})
+
+// 评论接口
+router.post('/addComment', (req, res, next) => {
+    let catInfo = {
+        catId: req.body.catId,
+        userId: req.body.userId,
+        nickName: req.body.nickName,
+        avatar: req.body.avatar,
+        content: req.body.content,
+    }
+    cats.cat.findOne({id: catInfo.catId}, (err, doc) => {
+        return util.dbPromise(err, doc)
+    })
+    .then(result => {
+        let commentList = [];
+
+        commentList = JSON.parse(result.commentList);
+        if (commentList.length) {
+            commentList.push({
+                id: commentList.length+1,
+                userId: catInfo.userId,
+                nickName: catInfo.nickName,
+                avatar: catInfo.avatar,
+                commentContent: catInfo.content,
+                commentTime: Date.now(),
+                praiseList: []
+            });
+            cats.cat.update({id: catInfo.catId}, {$set: { commentList: JSON.stringify(commentList) }}, (err, doc) => {
+                return util.dbPromise(err, doc)
+            })
+            .then(result2 => {
+                res.json({
+                    status: 0,
+                    msg: '评论成功',
+                    result: {
+                        count: commentList.length,
+                        list: commentList
+                    }
+                })
+            })
+        } else {
+            commentList.push({
+                id: 1,
+                userId: catInfo.userId,
+                nickName: catInfo.nickName,
+                avatar: catInfo.avatar,
+                commentContent: catInfo.content,
+                commentTime: Date.now(),
+                praiseList: []
+            });
+            cats.cat.update({id: catInfo.catId}, {$set: { commentList: JSON.stringify(commentList) }}, (err, doc) => {
+                return util.dbPromise(err, doc)
+            })
+            .then(result2 => {
+                res.json({
+                    status: 0,
+                    msg: '评论成功',
+                    result: {
+                        count: 1,
+                        list: commentList
+                    }
+                })
+            })
+        }
+    })
+    .catch(err => {
+        res.json({
+            status: 1,
+            msg: err.message
+        });
+    });
 })
 
 // 获取猫猫列表
@@ -341,86 +513,71 @@ router.get('/getCatList', (req, res, next) => {
 //     let i = 1;
 //     init();
 //     function init () {
-//     superagent
-//     .get('http://www.yymapp.com/api')
-//     .query(`act=getList&page=${count}&sort=def&turnTid=382`)
-//     .end((err, sres) => {
-//         // 常规的错误处理
-//         if (err) {
-//         return next(err);
-//         }
-//         let arr = JSON.parse(sres.text);
-//         let result = [];
-//         console.log(arr.data.list.length);
-//         // 每次添加新用户之前，先拿最后一个id
-//         CatListIds.findOne({}, (err, doc) => {
-//         if (err) {
-//             res.json({
-//             status: 1,
-//             msg: err.message
-//             });
-//         } else {
-//             doc.id = parseInt(doc.id);
-//             ++doc.id
-//             let update = {
-//             id: doc.id
-//             };
-//             CatListIds.update({
-//             name: 'cat_list'
-//             }, {
-//             $set: update
-//             },(err2, docc) => {
-//             if (err2) {
-//                 res.json({
-//                 status: 1,
-//                 msg: err.message
-//                 });
-//             } else {
-//                 arr.data.list.forEach((item, index) => {
-//                 i++;
-//                 console.log('index = ' + index);
-//                 let cat = new CatList({
+//         superagent
+//         .get('http://www.yymapp.com/api')
+//         .query(`act=getList&page=${count}&sort=def&turnTid=382`)
+//         .end((err, result) => {
+//             let arr = JSON.parse(result.text);
+//             console.log(arr.data.list.length);
+
+//             let k = 0;
+//             createCat(k);
+//             function createCat(j) {
+//                 console.log('j =', j);
+//                 let cat = new cats.cat({
+//                     // yym id
+//                     yymId: arr.data.list[j].id,
 //                     // 唯一id
 //                     id: i,
 //                     // 创建时间
-//                     createTime: item.addtime,
-//                     // 用户昵称
-//                     nickName: item.author,
+//                     createTime: arr.data.list[j].addtime,
 //                     // 用户id
 //                     userId: 1,
+//                     // 用户昵称
+//                     nickName: arr.data.list[j].author,
 //                     // 用户头像
-//                     avatar: 'http://yymapp.com/user/avatar/1',
-//                     // 评论数
-//                     comments: 0,
-//                     // 点赞数
-//                     praises: 0,
+//                     avatar: `http://yymapp.com/user/avatar/${util.randomNum(1, 10)}`,
+//                     // 评论列表
+//                     commentList: '[]',
+//                     // 点赞列表
+//                     praiseList: '[]',
+//                     // 经度
+//                     latitude: '',
+//                     // 纬度
+//                     longitude: '',
 //                     // 文本内容
-//                     html: item.summary,
+//                     html: arr.data.list[j].summary,
 //                     // 图片内容
-//                     imgs: item.picture,
+//                     imgs: arr.data.list[j].picture,
 //                     // 视频内容
-//                     videos: item.video
+//                     videos: arr.data.list[j].video
 //                 });
-//                 cat.save((err3, doccc) => {
-//                     if (err3) {
-//                     res.json({
-//                         status: 1,
-//                         msg: err3.message
-//                     })
+//                 cat.save((err, doc) => {
+//                     if (k < arr.data.list.length - 1) {
+//                         i++;
+//                         k++;
+//                         createCat(k);
 //                     } else {
-
+//                         i++;
+//                         k = 0;
+//                         count++;
+//                         if (count <= 120) {
+//                             init();
+//                         } else {
+//                             // 数据爬完再更新id
+//                             cats.ids.update({ name: 'cat_list' }, { $set: {id: i} }, (err2, doc2) => {
+//                                 res.json({
+//                                     status: 0,
+//                                     msg: '数据已爬取完毕',
+//                                     result: i
+//                                 });
+//                             })
+//                         }
 //                     }
-//                 });
-//                 });
-//                 count++;
-//                 if (count <= 98) {
-//                 init();
-//                 }
+//                 })
 //             }
-//             });
-//         }
-//         });
-//     })
+//         })
+
 //     }
 // });
 

@@ -7,7 +7,7 @@
         ref="loadmore">
             <ul class="index-list-ul">
                 <li v-for="item in catList" :key="item.id" @click="goDetail(item)">
-                    <cat-box :item="item"></cat-box>
+                    <cat-box :item="item" @openImg="openImg"></cat-box>
                 </li>
             </ul>
             <div slot="top" class="mint-loadmore-top">
@@ -17,9 +17,11 @@
                 </span>
             </div>
         </mt-loadmore>
+        <vue-photo-swipe :list="imgList" :imgIndex="imgIndex" @close="imgClose"></vue-photo-swipe>
     </div>
 </template>
 <script>
+import VuePhotoSwipe from '@/base/photoswipe/photoswipe'
 import CatBox from '@/base/catList/catBox'
 import {getCatList} from '@/api/index'
 import { Indicator,Loadmore } from 'mint-ui'
@@ -33,6 +35,8 @@ export default {
             pageIndex: 1,
             pageSize: 10,
             topStatus: '',
+            imgList: [],
+            imgIndex: 0,
             allLoaded: false,
             loadingFlag: false
         }
@@ -72,6 +76,16 @@ export default {
         handleTopChange(status) {
             this.topStatus = status;
         },
+        // 打开图片
+        openImg(obj) {
+            this.imgList = obj.imgList;
+            this.imgIndex = obj.imgIndex;
+        },
+        // 关闭图片
+        imgClose() {
+            this.imgList = [];
+            this.imgIndex = 0;
+        },
 
         // 下拉刷新
         loadTop() {
@@ -104,10 +118,40 @@ export default {
                 }).then(res => {
                     Indicator.close();
                     res.result.forEach(item => {
+
+                        // 根据id设置说说的主人头像和昵称
                         if (item.userId == this.userInfo.userId) {
-                            item.userName = this.userInfo.userName;
+                            item.nickName = this.userInfo.nickName;
                             item.avatar = this.userInfo.avatar;
                         }
+
+                        // 解析点赞列表
+                        item.praiseList = JSON.parse(item.praiseList);
+                        if (item.praiseList.length) {
+                            let praiseCount = 0;
+                            item.praiseList.forEach(commentItem => {
+                                // 判断自己是否点赞
+                                if (commentItem.userId == this.userInfo.userId && commentItem.isPraise) {
+                                    item.isPraise = true;
+                                }
+                                // 计算有多少人点赞
+                                if (commentItem.isPraise) {
+                                    praiseCount++;
+                                }
+                                // 计算有多少人评论
+                                if (commentItem.comment) {
+                                    commentCount++
+                                }
+                            });
+                            item.praiseCount = praiseCount;
+                        }
+                        if (item.isPraise === undefined) item.isPraise = false;
+                        if (item.praiseCount === undefined) item.praiseCount = 0;
+
+                        // 解析评论列表
+                        item.commentList = JSON.parse(item.commentList);
+
+                        // 解析图片
                         try {
                             if (item.imgs.length) item.imgs = JSON.parse(item.imgs);
                             if (item.videos.length) item.videos = JSON.parse(item.videos);
@@ -155,6 +199,7 @@ export default {
     },
     components: {
         CatBox,
+        VuePhotoSwipe,
         'mt-loadmore': Loadmore
     }
 }

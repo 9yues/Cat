@@ -1,6 +1,6 @@
 <template>
-    <div v-if="isTab">
-        <footer class="tabbar-container flex-container align-center text-center">
+    <div>
+        <footer class="tabbar-container flex-container align-center text-center" :class="{'on': !isTab}">
             <router-link class="flex" to="/index">
                 <i class="iconfont" :class="indexCls"></i>
                 <span class="tabbar-text">首页</span>
@@ -62,8 +62,12 @@ export default {
     bottom: 0;
     left: 0;
     width: 100%;
+    transition: all .3s cubic-bezier(0.82, 0.74, 0, 1.07);
     background: rgba(255,255,255,.8);
     backdrop-filter:blur(10px);
+    &.on{
+        transform: translateY(1.2rem);
+    }
     .flex{
         .iconfont{
             font-size: .5rem;

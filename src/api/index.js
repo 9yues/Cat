@@ -78,6 +78,38 @@ export function addCat(obj) {
     })
 }
 
+// 点赞接口
+export function addZan(obj) {
+    const params = Object.assign({}, {}, obj);
+    const data = qs.stringify(params);
+    return axios({
+        url: `${url}/addZan`,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        data
+    }).then(res => {
+        return Promise.resolve(res.data)
+    })
+}
+
+// 评论接口
+export function addComment(obj) {
+    const params = Object.assign({}, {}, obj);
+    const data = qs.stringify(params);
+    return axios({
+        url: `${url}/addComment`,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        data
+    }).then(res => {
+        return Promise.resolve(res.data)
+    })
+}
+
 // 单图片上传
 export function imgUpload(obj) {
     const data = obj;

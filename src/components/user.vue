@@ -112,7 +112,7 @@ export default {
             deep: true,
             handler(val) {
                 localStorage.setItem('userInfo', JSON.stringify(val));
-                this._updateUserInfo();
+                // this._updateUserInfo();
             }
         }
     },
@@ -136,15 +136,16 @@ export default {
         },
         // 显示用户信息
         showUserInfo(type) {
+            let obj = {}
             switch (type) {
                 case 'nickname':
                     MessageBox.prompt('请输入昵称', {inputPlaceholder: this.userInfo.nickName}).then(({value, action}) => {
                         if (action === 'confirm' && value) {
-                            let data = Object.assign({}, this.userInfo, {
-                                type: 'nickName',
-                                value
-                            })
+                            obj.type = 'nickName'
+                            obj.value = value;
+                            let data = Object.assign({}, this.userInfo, obj);
                             this.setUserInfo(data);
+                            this._updateUserInfo(obj);
                         }
                     });
                     break;
@@ -161,21 +162,23 @@ export default {
                                 });
                                 return;
                             }
-                            let data = Object.assign({}, this.userInfo, {
-                                type: 'userTel',
-                                value
-                            })
+                            obj.type = 'userTel'
+                            obj.value = value;
+                            let data = Object.assign({}, this.userInfo, obj)
                             this.setUserInfo(data);
+                            this._updateUserInfo(obj)
                         }
                     });
                     break;
                 case 'wx':
                    MessageBox.prompt('请输入微信号', {inputPlaceholder: this.userInfo.wx}).then(({value, action}) => {
-                        let data = Object.assign({}, this.userInfo, {
-                                type: 'wx',
-                                value
-                            })
+                       if (action === 'confirm' && value) {
+                            obj.type = 'wx'
+                            obj.value = value;
+                            let data = Object.assign({}, this.userInfo, obj)
                             this.setUserInfo(data);
+                            this._updateUserInfo(obj)
+                       }
                     });
                     break;
                 case 'email':
@@ -188,22 +191,22 @@ export default {
                                 });
                                 return;
                             }
-                            let data = Object.assign({}, this.userInfo, {
-                                type: 'email',
-                                value
-                            })
+                            obj.type = 'email'
+                            obj.value = value;
+                            let data = Object.assign({}, this.userInfo, obj)
                             this.setUserInfo(data);
+                            this._updateUserInfo(obj)
                         }
                     });
                     break;
                 case 'sign':
                     MessageBox.prompt('请输入个性签名', {inputPlaceholder: this.userInfo.sign}).then(({value, action}) => {
                         if (action === 'confirm' && value) {
-                            let data = Object.assign({}, this.userInfo, {
-                                type: 'sign',
-                                value
-                            })
+                            obj.type = 'sign'
+                            obj.value = value;
+                            let data = Object.assign({}, this.userInfo, obj)
                             this.setUserInfo(data);
+                            this._updateUserInfo(obj)
                         }
                     });
                     break;
@@ -211,19 +214,18 @@ export default {
         },
         // 用户性别更改回调
         sexCallback(val) {
+            let obj = { type: 'sex' };
             if (val.name === '男') {
-                let data = Object.assign({}, this.userInfo, {
-                    type: 'sex',
-                    value: 1
-                })
+                obj.value = 1;
+                let data = Object.assign({}, this.userInfo, obj)
                 this.setUserInfo(data);
             } else {
-                let data = Object.assign({}, this.userInfo, {
-                    type: 'sex',
-                    value: 0
-                })
+                obj.value = 0;
+                let data = Object.assign({}, this.userInfo, obj)
                 this.setUserInfo(data);
             }
+            // 更新性别
+            this._updateUserInfo(obj);
         },
         // 退出登录
         loginBack() {
@@ -245,16 +247,22 @@ export default {
                     return;
                 }
                 this.$refs.file.value = '';
-                let data = Object.assign({}, this.userInfo, {
+                let obj = {
                     type: 'avatar',
                     value: res.result
-                })
+                }
+                let data = Object.assign({}, this.userInfo, obj)
                 this.setUserInfo(data);
+                // 更新头像
+                this._updateUserInfo(obj);
             })
         },
         // 修改用户信息接口
-        _updateUserInfo() {
-            updateUserInfo(this.userInfo).then(res => {
+        _updateUserInfo(obj) {
+            let data = Object.assign({}, obj, {
+                userId: this.userInfo.userId
+            })
+            updateUserInfo(data).then(res => {
                 if (res.status === 1) {
                     Toast({
                         message: res.msg,

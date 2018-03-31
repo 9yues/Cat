@@ -68,8 +68,6 @@ export default {
             }
             for (let i = 0; i < files.length; i++) {
                 if (num === files.length) {
-                    // 全部上传完成后情况input value值
-                    this.$refs.file.value = '';
                     return;
                 }
                 // 创建 formDate对象
@@ -116,6 +114,8 @@ export default {
             }
             this._addCat({
                 userId: this.userInfo.userId,
+                nickName: this.userInfo.nickName,
+                avatar: this.userInfo.avatar,
                 html: this.text,
                 imgs: JSON.stringify(this.imgs)
             });
@@ -161,6 +161,9 @@ export default {
                 Indicator.close();
                 this.setIsPublish(false);
 
+                this.$refs.file.value = '';
+                this.imgs = [];
+
                 // 重新获取列表
                 this.$parent.$refs.catList.pageIndex = 1;
                 this.$parent.$refs.catList._getCatList();
@@ -197,7 +200,7 @@ export default {
             display: block;
             padding: .2rem 0;
             width: 100%;
-            height: 3rem;
+            height: 2rem;
             box-sizing: border-box;
             font-size: .28rem;
             color: $desc_color;
@@ -295,7 +298,7 @@ export default {
     }
     .publish-ft{
         width: 100%;
-        padding: 0 .2rem;
+        padding: 0 .2rem 1rem .2rem;
         box-sizing: border-box;
         button{
             display: block;

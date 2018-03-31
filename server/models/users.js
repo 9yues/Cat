@@ -25,6 +25,10 @@ let userSchema = new Schema({
   wx: String,
   // 头像
   avatar: String,
+  // 我赞过的说说
+  myZanList: String,
+  // 我评论过的说说
+  myCommentList: String,
   // 注册时间
   createTime: String,
   // 最后一次登录的时间

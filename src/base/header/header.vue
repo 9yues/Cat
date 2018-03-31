@@ -28,9 +28,12 @@ export default {
     position: fixed;
     left: 0;
     top: 0;
+    z-index: 9;
     width: 100%;
     padding: .45rem 0;
-    background: #fff;
+    background: rgba(255,255,255,.8);
+    backdrop-filter:blur(10px);
+    border-bottom: .5px solid $border_color;
     .header-l{
         position: absolute;
         left: 0;

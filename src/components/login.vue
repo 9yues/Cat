@@ -236,7 +236,7 @@ export default {
     // background: #fff;
     overflow: hidden;
     .box{
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;

@@ -23,6 +23,15 @@ export default {
         }
     },
     beforeRouteUpdate (to, from, next) {
+        setTimeout(() => {
+            let routerName = localStorage.getItem('routerName');
+            console.log(routerName);
+            if (routerName === 'indexDetail' || routerName === 'login') {
+                this.setIsTab(false);
+            } else {
+                this.setIsTab(true);
+            }
+        }, 500);
         let isBack = this.$router.isBack
         if (isBack) {
             this.transitionName = 'slide-right'
@@ -33,12 +42,12 @@ export default {
         next()
     },
     beforeRouteLeave (to, from, next) {
-        console.log('name = ' + this.$route.name)
-        if (this.$route.name === 'login') {
-            this.setIsTab(false);
-        } else {
-            this.setIsTab(true);
-        }
+        // console.log('name = ' + this.$route.name)
+        // if (this.$route.name === 'login') {
+        //     this.setIsTab(false);
+        // } else {
+        //     this.setIsTab(true);
+        // }
     },
     methods: {
         ...mapMutations({
