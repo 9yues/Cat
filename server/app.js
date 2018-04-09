@@ -10,6 +10,7 @@ var index = require('./routes/index');
 
 var app = express();
 
+// 解决跨域问题
 app.all('*', (req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');

@@ -49,6 +49,22 @@ module.exports = {
             }
         });
     },
+    // 更新我的评论列表
+    updateMyCommentList(user, catInfo, arr) {
+        let myComment = [];
+        arr.forEach(item => {
+            if (item.userId == catInfo.userId) {
+                myComment.push(Object.assign({},item, {
+                    catId: catInfo.catId
+                }));
+                user.findOne({userId: catInfo.userId}, (err, doc) => {
+                    let myCommentList = JSON.parse(doc.myCommentList);
+                        myCommentList = myCommentList.concat(myComment)
+                    user.update({userId: catInfo.userId}, {$set: { myCommentList: JSON.stringify(myCommentList) }}, (err, doc) => {})
+                });
+            }
+        });
+    },
     // 生成指定位数的随机字符串
     randomString: (len) => {
         len = len || 32;

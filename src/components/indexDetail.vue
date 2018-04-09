@@ -64,7 +64,6 @@ export default {
     mounted() {
         this.setIsTab(false);
         this.item = JSON.parse(localStorage.getItem('current_cat'));
-        this.item.commentList = JSON.parse(this.item.commentList);
         if (this.$route.query.isComment) {
             this.$refs.input.click();
         }

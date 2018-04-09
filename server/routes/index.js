@@ -437,6 +437,11 @@ router.post('/addComment', (req, res, next) => {
                 commentTime: Date.now(),
                 praiseList: []
             });
+
+            // 更新我的评论列表
+            util.updateMyCommentList(users.user, catInfo, commentList);
+
+
             cats.cat.update({id: catInfo.catId}, {$set: { commentList: JSON.stringify(commentList) }}, (err, doc) => {
                 return util.dbPromise(err, doc)
             })
@@ -460,6 +465,10 @@ router.post('/addComment', (req, res, next) => {
                 commentTime: Date.now(),
                 praiseList: []
             });
+
+            // 更新我的评论列表
+            util.updateMyCommentList(users.user, catInfo, commentList);
+
             cats.cat.update({id: catInfo.catId}, {$set: { commentList: JSON.stringify(commentList) }}, (err, doc) => {
                 return util.dbPromise(err, doc)
             })
